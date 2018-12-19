@@ -1,0 +1,9 @@
+version: '3'
+services:
+  aks-node-puppet:
+    build: .
+    privileged: true
+    volumes:
+      - /:/node
+    env_file:
+      - .env

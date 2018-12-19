@@ -1,0 +1,109 @@
+#!/bin/sh
+set -e
+
+# Validate env variables
+: "${GIT_SSH_PRIVATE_KEY?Need to set env var GIT_SSH_PRIVATE_KEY}"
+: "${GIT_REPO?Need to set env var GIT_REPO}"
+: "${GIT_BRANCH?Need to set env var GIT_BRANCH}"
+
+echo "ENV"
+echo "GIT_REPO: $GIT_REPO"
+echo "GIT_BRANCH: $GIT_BRANCH"
+echo "DEBUG: $DEBUG"
+echo
+
+if [ -n "$DEBUG" ] 
+then
+  set -x
+fi
+
+install_ssh() {
+  echo "Running apt-get update"
+  apt-get update >/dev/null 2>&1
+
+  echo "Installing OpenSSH Client"
+  apt-get install -y openssh-client -y >/dev/null
+}
+
+install_ssh() {
+  echo "Running apt-get update"
+  apt-get update >/dev/null 2>&1
+
+  echo "Installing Git"
+  apt-get install -y git -y >/dev/null
+}
+
+create_id_rsa() {
+  if [ ! $(which ssh) ]
+  then
+    install_ssh
+  fi
+
+  echo "Creating private SSH key"
+  mkdir -p /root/.ssh
+  echo $GIT_SSH_PRIVATE_KEY | base64 -d > /root/.ssh/id_rsa
+  chmod 600 /root/.ssh/id_rsa > /dev/null
+  ssh-keygen -y -f /root/.ssh/id_rsa > /root/.ssh/id_rsa.pub
+  ssh-keyscan github.com >> /root/.ssh/known_hosts
+  echo "Public key (id_rsa): $(cat /root/.ssh/id_rsa.pub)"
+}
+
+clone_environment() {
+  create_id_rsa
+
+  if [ ! $(which git) ]
+  then
+    install_git
+  fi
+
+  if [ -d "/etc/puppetlabs/code" ]
+  then
+    echo "Backing up /etc/puppetlabs/code to /etc/puppetlabs/code.bak"
+    mv /etc/puppetlabs/code /etc/puppetlabs/code.bak
+  fi
+
+  echo "Creating /etc/puppetlabs"
+  mkdir -p /etc/puppetlabs
+
+  echo "Cloning git repository $GIT_REPO from branch $GIT_BRANCH into /etc/puppetlabs/code"
+  git clone $GIT_REPO /etc/puppetlabs/code -b $GIT_BRANCH > /dev/null
+}
+
+install_puppet() {
+  . /etc/lsb-release
+  majver=$DISTRIB_RELEASE
+
+  case $majver in
+    14.04) codename=trusty ;;
+    16.04) codename=xenial ;;
+    18.04) codename=bionic ;;
+    *) echo "Release not supported" ;;
+  esac
+  echo "Detected Ubuntu Linux $majver (codename $codename)"
+
+  echo "Adding repo for Puppet"
+  wget -q "http://apt.puppetlabs.com/puppet-release-${codename}.deb" >/dev/null
+  dpkg -i "puppet-release-${codename}.deb" >/dev/null
+
+  echo "Running apt-get update"
+  apt-get update >/dev/null 2>&1
+
+  echo "Installing Puppet and its dependencies"
+  apt-get install -y puppet-agent -y >/dev/null
+  apt-get install -y apt-transport-https -y >/dev/null
+}
+
+run_puppet() {
+  echo "Checking if Puppet is installed"
+  if [ ! $(which puppet) ] || [ ! $(puppet --version | grep "^[5|6|7]") ]
+  then
+    install_puppet
+  fi
+
+  clone_environment
+
+  echo "Running /opt/puppetlabs/bin/puppet apply /etc/puppetlabs/code/site.pp"
+  /opt/puppetlabs/bin/puppet apply /etc/puppetlabs/code/site.pp
+}
+
+run_puppet
