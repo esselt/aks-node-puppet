@@ -1,0 +1,46 @@
+apiVersion: apps/v1beta2
+kind: DaemonSet
+metadata:
+  name: {{ include "aks-node-puppet.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "aks-node-puppet.name" . }}
+    helm.sh/chart: {{ include "aks-node-puppet.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "aks-node-puppet.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "aks-node-puppet.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      initContainers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+            - name: root
+              mountPath: /node
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+      volumes:
+        - name: root
+          hostPath: /
+      containers:
+        - name: {{ .Chart.Name }}
+          image: gcr.io/google_containers/pause
+          imagePullPolicy: IfNotPresent
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
