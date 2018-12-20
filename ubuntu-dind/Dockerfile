@@ -5,7 +5,8 @@ RUN apt-get update && apt-get install -y \
         ca-certificates \
         curl \
         lxc \
-        iptables
+        iptables \
+        cron
 
 RUN curl -sSL https://get.docker.com/ | sh
 
