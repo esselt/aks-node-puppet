@@ -39,13 +39,23 @@ create_id_rsa() {
     install_ssh
   fi
 
-  echo "Creating private SSH key"
+  echo "Making sure /root/.ssh exist"
   mkdir -p /root/.ssh
-  echo $GIT_SSH_PRIVATE_KEY | base64 -d > /root/.ssh/id_rsa
-  chmod 600 /root/.ssh/id_rsa > /dev/null
-  ssh-keygen -y -f /root/.ssh/id_rsa > /root/.ssh/id_rsa.pub
+
+  if [ -n "$GIT_SSH_PRIVATE_KEY" ]
+  then
+
+    echo "Creating root SSH private key"
+    echo $GIT_SSH_PRIVATE_KEY | base64 -d > /root/.ssh/id_rsa
+    chmod 600 /root/.ssh/id_rsa > /dev/null
+
+    echo "Generating root SSH public key"
+    ssh-keygen -y -f /root/.ssh/id_rsa > /root/.ssh/id_rsa.pub
+    echo "Public key (id_rsa): $(cat /root/.ssh/id_rsa.pub)"
+  fi
+
+  echo "Getting GitHub SSH fingerprints"
   ssh-keyscan github.com >> /root/.ssh/known_hosts
-  echo "Public key (id_rsa): $(cat /root/.ssh/id_rsa.pub)"
 }
 
 clone_environment() {
