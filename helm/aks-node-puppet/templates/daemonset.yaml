@@ -23,8 +23,9 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           volumeMounts:
-            - name: root
+            - name: node
               mountPath: /node
+              readOnly: false
           {{- if or .Values.env .Values.envSecrets }}
           env:
             {{- range $key, $value := .Values.env }}
@@ -42,8 +43,9 @@ spec:
           resources:
 {{ toYaml .Values.resources | indent 12 }}
       volumes:
-        - name: root
-          hostPath: /
+        - name: node
+          hostPath: 
+            path: /
       containers:
         - name: {{ .Chart.Name }}
           image: gcr.io/google_containers/pause
