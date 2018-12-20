@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
         curl \
         lxc \
         iptables \
+        lsb-core \
         cron
 
 RUN curl -sSL https://get.docker.com/ | sh
