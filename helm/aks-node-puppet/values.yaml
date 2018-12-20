@@ -26,10 +26,10 @@ tolerations: []
 
 affinity: {}
 
-env: {}
+#env: {}
 # GIT_REPO=git@github.com:Super/Env.git
 # GIT_BRANCH=master
 
-envSecret: {}
+#envSecret: {}
 # GIT_SSH_PRIVATE_KEY=puppetrepokey
 # Gets the value from key GIT_SSH_PRIVATE_KEY in the secret named puppetrepokey
