@@ -7,5 +7,5 @@ cp run.sh /node
 echo "Chrooting to /node and running run.sh"
 chroot /node ./run.sh
 
-echo "Running forever with tail -f /dev/null"
-tail -f /dev/null
+echo "Cleaning up run.sh"
+rm -rf /node/run.sh
