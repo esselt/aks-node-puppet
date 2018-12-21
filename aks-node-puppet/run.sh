@@ -113,8 +113,8 @@ run_puppet() {
 
   clone_environment
 
-  echo "Running /opt/puppetlabs/bin/puppet apply /etc/puppetlabs/code/site.pp"
-  /opt/puppetlabs/bin/puppet apply /etc/puppetlabs/code/site.pp
+  echo "Running /opt/puppetlabs/bin/puppet apply -l /var/log/puppetlabs/puppet/apply.log /etc/puppetlabs/code/site.pp"
+  /opt/puppetlabs/bin/puppet apply -l /var/log/puppetlabs/puppet/apply.log /etc/puppetlabs/code/site.pp
 }
 
 run_puppet
