@@ -93,6 +93,7 @@ install_puppet() {
   echo "Adding repo for Puppet"
   wget -q "http://apt.puppetlabs.com/puppet-release-${codename}.deb" >/dev/null
   dpkg -i "puppet-release-${codename}.deb" >/dev/null
+  rm -rf "puppet-release-${codename}.deb"
 
   echo "Running apt-get update"
   apt-get update >/dev/null 2>&1
