@@ -46,10 +46,19 @@ spec:
         - name: node
           hostPath: 
             path: /
+        - name: puppetlogs
+          hostPath: 
+            path: /var/log/puppetlabs/puppet
       containers:
         - name: {{ .Chart.Name }}
-          image: gcr.io/google_containers/pause
+          image: busybox
           imagePullPolicy: IfNotPresent
+          command: [ "/bin/sh" ]
+          args: [ "-c", "while [ ! -f /logs/apply.log ];do sleep 1;done;tail -f /logs/apply.log" ]
+          volumeMounts:
+            - name: puppetlogs
+              mountPath: /logs
+              readOnly: true
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- with .Values.affinity }}
