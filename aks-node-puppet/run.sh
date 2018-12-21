@@ -2,7 +2,6 @@
 set -e
 
 # Validate env variables
-: "${GIT_SSH_PRIVATE_KEY?Need to set env var GIT_SSH_PRIVATE_KEY}"
 : "${GIT_REPO?Need to set env var GIT_REPO}"
 : "${GIT_BRANCH?Need to set env var GIT_BRANCH}"
 
