@@ -67,8 +67,9 @@ clone_environment() {
 
   if [ -d "/etc/puppetlabs/code" ]
   then
-    echo "Backing up /etc/puppetlabs/code to /etc/puppetlabs/code.bak"
-    mv /etc/puppetlabs/code /etc/puppetlabs/code.`date +%Y%m%d%H%M%S`
+    timenow=$(date +%Y%m%d%H%M%S)
+    echo "Backing up /etc/puppetlabs/code to /etc/puppetlabs/code.$timenow"
+    mv /etc/puppetlabs/code /etc/puppetlabs/code.$timenow
   fi
 
   echo "Creating /etc/puppetlabs"
