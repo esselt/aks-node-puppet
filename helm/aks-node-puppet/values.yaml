@@ -5,7 +5,7 @@
 image:
   repository: esselt/aks-node-puppet
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 nameOverride: ""
 fullnameOverride: ""
