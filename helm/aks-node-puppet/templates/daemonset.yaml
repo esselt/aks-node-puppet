@@ -54,7 +54,7 @@ spec:
           image: busybox
           imagePullPolicy: IfNotPresent
           command: [ "/bin/sh" ]
-          args: [ "-c", "while [ ! -f /logs/apply.log ];do sleep 1;done;tail -f /logs/apply.log" ]
+          args: [ "-c", "while [ ! -f /logs/apply.log ];do sleep 1;done;tail -f -n +1 /logs/apply.log" ]
           volumeMounts:
             - name: puppetlogs
               mountPath: /logs
