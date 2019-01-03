@@ -24,7 +24,7 @@ install_ssh() {
   apt-get install -y openssh-client -y >/dev/null
 }
 
-install_ssh() {
+install_git() {
   echo "Running apt-get update"
   apt-get update >/dev/null 2>&1
 
