@@ -1,4 +1,4 @@
-class puppet_cron {
+node default {
 
   service { 'puppet':
     ensure => stopped,
@@ -17,13 +17,5 @@ class puppet_cron {
     command => '/opt/puppetlabs/bin/puppet apply -l /var/log/puppetlabs/puppet/apply.log /etc/puppetlabs/code/site.pp',
     user    => 'root',
     minute  => '*/5',
-  }
-
-  include logrotate
-  logrotate::rule { 'puppet-apply':
-    path         => '/var/log/puppetlabs/puppet/apply.log',
-    rotate       => 5,
-    rotate_every => 'week',
-    compress     => true
   }
 }
